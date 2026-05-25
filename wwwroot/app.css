@@ -1,0 +1,125 @@
+/* ===== STYLESHOP — TIENDA DE ROPA — PALETA BEIGE ===== */
+
+:root {
+    --beige-100: #FDF9F5;
+    --beige-200: #F5F0E8;
+    --beige-300: #E8D5B7;
+    --beige-400: #D4B896;
+    --beige-500: #C4A882;
+    --brown-400: #8B7355;
+    --brown-500: #8B6F47;
+    --brown-600: #6B4F35;
+    --brown-700: #5A3E28;
+    --brown-800: #4A3728;
+}
+
+html, body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--beige-100);
+    color: var(--brown-800);
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4 {
+    color: var(--brown-600);
+}
+
+a {
+    color: var(--brown-500);
+}
+
+a:hover {
+    color: var(--brown-700);
+}
+
+/* Layout */
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, var(--brown-700) 0%, var(--brown-800) 100%);
+}
+
+.top-row {
+    background-color: var(--beige-200);
+    border-bottom: 1px solid var(--beige-300);
+    justify-content: flex-end;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.top-row ::deep a, .top-row ::deep .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    text-decoration: none;
+    color: var(--brown-500);
+}
+
+article {
+    padding-top: 1.5rem;
+}
+
+/* Blazor error UI */
+#blazor-error-ui {
+    background: #FFF3E0;
+    border-top: 1px solid #FFB74D;
+    bottom: 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    left: 0;
+    padding: 0.625rem 1.25rem 0.625rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    color: #E65100;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+/* Valid/Invalid form fields */
+.valid.modified:not([type=checkbox]) {
+    outline: 2px solid var(--beige-500);
+}
+
+.invalid {
+    outline: 2px solid #E57373;
+}
+
+/* Responsive */
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    article {
+        min-height: calc(100vh - 3.5rem);
+        padding-left: 0;
+    }
+}

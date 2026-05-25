@@ -1,0 +1,15 @@
+/* Hover en los links */
+a[style*="border-radius: 50px"]:hover {
+    background: rgba(196, 168, 130, 0.12) !important;
+    color: #F5F0E8 !important;
+    border-color: rgba(196, 168, 130, 0.2) !important;
+}
+
+/* Estado activo — Blazor agrega la clase nav-pill-active */
+.nav-pill-active {
+    background: #8B6F47 !important;
+    color: #F5F0E8 !important;
+    font-weight: 700 !important;
+    border-color: #A07850 !important;
+    box-shadow: 0 4px 14px rgba(139, 111, 71, 0.45) !important;
+}

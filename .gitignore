@@ -1,0 +1,32 @@
+## .NET / ASP.NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+
+## Secrets (IMPORTANT: never commit real connection strings!)
+appsettings.Development.json
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+## Logs
+*.log
+logs/
+
+## OS
+.DS_Store
+Thumbs.db

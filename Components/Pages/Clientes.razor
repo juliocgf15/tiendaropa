@@ -1,0 +1,338 @@
+@page "/clientes"
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@inject TiendaRopaDbContext db
+
+<PageTitle>Clientes - StyleShop</PageTitle>
+
+<div style="max-width: 920px; margin: 36px auto; padding: 0 24px 64px;">
+
+    <h1 style="color: #6B4F35; margin-bottom: 6px; font-size: 1.9rem; font-weight: 700;">
+        👥 Gestión de Clientes
+    </h1>
+    <p style="color: #8B7355; margin-bottom: 28px;">
+        Administra la base de datos de clientes de la tienda.
+        <span style="background: #F0E6D3; color: #8B6F47; padding: 2px 10px; border-radius: 10px;
+            font-size: 0.78rem; font-weight: 600; margin-left: 6px;">📦 Tu base de datos</span>
+    </p>
+
+    <!-- ===== FORMULARIO ALTA ===== -->
+    <div style="background: white; padding: 28px; border-radius: 14px; margin-bottom: 28px;
+        border: 2px solid #C4A882; box-shadow: 0 2px 10px rgba(139,111,71,0.1);">
+        <h3 style="color: #6B4F35; margin-bottom: 22px; font-size: 1.15rem;">➕ Nuevo Cliente</h3>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #4A3728;">
+                    Nombre <span style="color: #C62828;">*</span>
+                </label>
+                <input @bind="nuevoCliente.Nombre" type="text" placeholder="Ej: María García"
+                       style="@InputStyle" />
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #4A3728;">
+                    Teléfono <span style="color: #C62828;">*</span>
+                </label>
+                <input @bind="nuevoCliente.Telefono" type="text" placeholder="Ej: 312-555-0100"
+                       style="@InputStyle" />
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #4A3728;">
+                    Correo Electrónico <span style="color: #C62828;">*</span>
+                </label>
+                <input @bind="nuevoCliente.Email" type="email" placeholder="Ej: maria@email.com"
+                       style="@InputStyle" />
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(mensajeError))
+        {
+            <div style="background: #FFEBEE; color: #C62828; padding: 12px 16px; border-radius: 8px; margin-top: 14px; font-weight: 500;">
+                ⚠️ @mensajeError
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(mensajeExito))
+        {
+            <div style="background: #E8F5E9; color: #2E7D32; padding: 12px 16px; border-radius: 8px; margin-top: 14px; font-weight: 500;">
+                ✅ @mensajeExito
+            </div>
+        }
+
+        <button @onclick="AgregarCliente"
+                style="margin-top: 18px; background: #8B6F47; color: #F5F0E8; padding: 12px 32px;
+                border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+            ✓ Registrar Cliente
+        </button>
+    </div>
+
+    <!-- ===== FORMULARIO EDICIÓN ===== -->
+    @if (clienteEnEdicion != null)
+    {
+        <div style="background: #FDF6EC; padding: 28px; border-radius: 14px; margin-bottom: 28px;
+            border: 2px solid #D4A574; box-shadow: 0 2px 10px rgba(139,111,71,0.12);">
+            <h3 style="color: #5A3E28; margin-bottom: 20px;">✏️ Editando Cliente #@clienteEnEdicion.Id</h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">
+                        Nombre <span style="color: #C62828;">*</span>
+                    </label>
+                    <input @bind="clienteEnEdicion.Nombre" type="text" style="@InputStyleEdit" />
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">
+                        Teléfono <span style="color: #C62828;">*</span>
+                    </label>
+                    <input @bind="clienteEnEdicion.Telefono" type="text" style="@InputStyleEdit" />
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">
+                        Email <span style="color: #C62828;">*</span>
+                    </label>
+                    <input @bind="clienteEnEdicion.Email" type="email" style="@InputStyleEdit" />
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(mensajeErrorEditar))
+            {
+                <div style="background: #FFEBEE; color: #C62828; padding: 12px; border-radius: 8px; margin-top: 14px;">
+                    ⚠️ @mensajeErrorEditar
+                </div>
+            }
+
+            <div style="display: flex; gap: 12px; margin-top: 18px;">
+                <button @onclick="GuardarEdicion"
+                        style="background: #6B4F35; color: white; padding: 10px 24px;
+                        border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    ✓ Guardar Cambios
+                </button>
+                <button @onclick="CancelarEdicion"
+                        style="background: #9E9E9E; color: white; padding: 10px 24px;
+                        border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    ✗ Cancelar
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- ===== CONFIRMACIÓN ELIMINAR ===== -->
+    @if (clienteAEliminar != null)
+    {
+        <div style="background: #FFF3E0; padding: 24px; border-radius: 14px; margin-bottom: 28px;
+            border: 2px solid #FFB74D;">
+            <h3 style="color: #E65100;">🗑️ Confirmar eliminación</h3>
+            <p>¿Estás seguro de que deseas eliminar a <strong>@clienteAEliminar.Nombre</strong>?
+            Esta acción no se puede deshacer.</p>
+            <div style="display: flex; gap: 12px; margin-top: 14px;">
+                <button @onclick="ConfirmarEliminar"
+                        style="background: #C62828; color: white; padding: 10px 24px;
+                        border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    🗑️ Sí, eliminar
+                </button>
+                <button @onclick="() => clienteAEliminar = null"
+                        style="background: #6B7280; color: white; padding: 10px 24px;
+                        border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- ===== TABLA CLIENTES ===== -->
+    <div style="background: white; padding: 24px; border-radius: 14px;
+        border: 2px solid #C4A882; box-shadow: 0 2px 8px rgba(139,111,71,0.08);">
+        <h3 style="color: #6B4F35; margin-bottom: 18px;">📋 Clientes registrados (@clientes.Count)</h3>
+
+        @if (clientes.Count == 0)
+        {
+            <p style="color: #B8A89A; text-align: center; padding: 40px;">
+                No hay clientes registrados. ¡Agrega el primero arriba!
+            </p>
+        }
+        else
+        {
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #8B6F47; color: #F5F0E8;">
+                            <th style="@ThStyle">ID</th>
+                            <th style="@ThStyle">Nombre</th>
+                            <th style="@ThStyle">Teléfono</th>
+                            <th style="@ThStyle">Email</th>
+                            <th style="@ThStyle">Registro</th>
+                            <th style="@ThStyle; text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cliente in clientes)
+                        {
+                            var idx = clientes.IndexOf(cliente);
+                            <tr style="border-bottom: 1px solid #E8D5B7;
+                                background: @(idx % 2 == 0 ? "white" : "#FDF9F5");">
+                                <td style="@TdStyle; color: #9E9E9E;">@cliente.Id</td>
+                                <td style="@TdStyle; font-weight: 600; color: #4A3728;">@cliente.Nombre</td>
+                                <td style="@TdStyle; color: #6B5344;">@cliente.Telefono</td>
+                                <td style="@TdStyle; color: #6B5344;">@cliente.Email</td>
+                                <td style="@TdStyle; color: #9E9E9E; font-size: 0.85rem;">
+                                    @cliente.FechaRegistro.ToString("dd/MM/yyyy")
+                                </td>
+                                <td style="@TdStyle; text-align: center; white-space: nowrap;">
+                                    <button @onclick="() => IniciarEdicion(cliente)"
+                                            style="background: #C4A882; color: #4A3728; padding: 5px 12px;
+                                            border: none; border-radius: 6px; cursor: pointer;
+                                            font-size: 0.88rem; margin-right: 6px; font-weight: 600;">
+                                        ✏️ Editar
+                                    </button>
+                                    <button @onclick="() => PedirConfirmacionEliminar(cliente)"
+                                            style="background: #EF9A9A; color: #B71C1C; padding: 5px 12px;
+                                            border: none; border-radius: 6px; cursor: pointer;
+                                            font-size: 0.88rem; font-weight: 600;">
+                                        🗑️ Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private Cliente nuevoCliente = new();
+    private Cliente? clienteEnEdicion = null;
+    private Cliente? clienteAEliminar = null;
+    private List<Cliente> clientes = new();
+    private string mensajeError = "";
+    private string mensajeExito = "";
+    private string mensajeErrorEditar = "";
+
+    private string InputStyle => "width: 100%; padding: 10px 12px; border: 2px solid #C4A882; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; background: #FDF9F5; color: #4A3728;";
+    private string InputStyleEdit => "width: 100%; padding: 10px 12px; border: 2px solid #D4A574; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; background: white; color: #4A3728;";
+    private string ThStyle => "padding: 12px 14px; text-align: left; font-weight: 600;";
+    private string TdStyle => "padding: 12px 14px;";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarClientes();
+    }
+
+    private async Task CargarClientes()
+    {
+        clientes = await db.Clientes.OrderByDescending(c => c.FechaRegistro).ToListAsync();
+    }
+
+    private async Task AgregarCliente()
+    {
+        mensajeError = "";
+        mensajeExito = "";
+
+        if (string.IsNullOrWhiteSpace(nuevoCliente.Nombre))
+        {
+            mensajeError = "El nombre del cliente es obligatorio.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(nuevoCliente.Telefono))
+        {
+            mensajeError = "El teléfono es obligatorio.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(nuevoCliente.Email))
+        {
+            mensajeError = "El email es obligatorio.";
+            return;
+        }
+
+        nuevoCliente.FechaRegistro = DateTime.Now;
+        db.Clientes.Add(nuevoCliente);
+        await db.SaveChangesAsync();
+
+        mensajeExito = $"Cliente \"{nuevoCliente.Nombre}\" registrado correctamente.";
+        nuevoCliente = new Cliente();
+        await CargarClientes();
+    }
+
+    private void IniciarEdicion(Cliente cliente)
+    {
+        mensajeError = "";
+        mensajeExito = "";
+        mensajeErrorEditar = "";
+        clienteAEliminar = null;
+
+        clienteEnEdicion = new Cliente
+        {
+            Id = cliente.Id,
+            Nombre = cliente.Nombre,
+            Telefono = cliente.Telefono,
+            Email = cliente.Email,
+            FechaRegistro = cliente.FechaRegistro
+        };
+    }
+
+    private async Task GuardarEdicion()
+    {
+        mensajeErrorEditar = "";
+
+        if (clienteEnEdicion == null) return;
+
+        if (string.IsNullOrWhiteSpace(clienteEnEdicion.Nombre))
+        {
+            mensajeErrorEditar = "El nombre es obligatorio.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(clienteEnEdicion.Telefono))
+        {
+            mensajeErrorEditar = "El teléfono es obligatorio.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(clienteEnEdicion.Email))
+        {
+            mensajeErrorEditar = "El email es obligatorio.";
+            return;
+        }
+
+        var original = await db.Clientes.FirstOrDefaultAsync(c => c.Id == clienteEnEdicion.Id);
+        if (original != null)
+        {
+            original.Nombre = clienteEnEdicion.Nombre;
+            original.Telefono = clienteEnEdicion.Telefono;
+            original.Email = clienteEnEdicion.Email;
+            await db.SaveChangesAsync();
+        }
+
+        clienteEnEdicion = null;
+        await CargarClientes();
+    }
+
+    private void CancelarEdicion()
+    {
+        clienteEnEdicion = null;
+        mensajeErrorEditar = "";
+    }
+
+    private void PedirConfirmacionEliminar(Cliente cliente)
+    {
+        clienteAEliminar = cliente;
+        clienteEnEdicion = null;
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        if (clienteAEliminar == null) return;
+
+        // Verificar que no tenga ventas
+        bool tieneVentas = await db.Ventas.AnyAsync(v => v.ClienteId == clienteAEliminar.Id);
+        if (tieneVentas)
+        {
+            mensajeError = $"No se puede eliminar a \"{clienteAEliminar.Nombre}\" porque tiene ventas registradas.";
+            clienteAEliminar = null;
+            return;
+        }
+
+        db.Clientes.Remove(clienteAEliminar);
+        await db.SaveChangesAsync();
+        clienteAEliminar = null;
+        await CargarClientes();
+    }
+}
