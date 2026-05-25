@@ -111,6 +111,6 @@ dotnet run
 
 Este proyecto fue desarrollado con apoyo de **Claude (Anthropic)** como herramienta de asistencia en la generación de componentes Blazor, diseño visual con paleta beige y patrones de consumo de API.
 
-**Enlace de conversación:** [Agregar enlace aquí]
+**Enlace de conversación:** https://claude.ai/share/91201372-031a-4d78-8737-86a0a7d49198
 
 Comprendo completamente el funcionamiento de cada módulo y estoy preparado para defenderlo oralmente.
