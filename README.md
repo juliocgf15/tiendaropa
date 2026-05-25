@@ -1,144 +1,116 @@
-# StyleShop — Tienda de Ropa 👗
+# 👗 StyleShop — Tienda de Ropa
 
-**Universidad de Colima · Facultad de Telemática · Programación para Web · 3a Parcial**
+![StyleShop](https://img.shields.io/badge/Blazor-Server-512BD4?style=for-the-badge&logo=blazor)
+![Azure](https://img.shields.io/badge/Azure-SQL%20Database-0078D4?style=for-the-badge&logo=microsoftazure)
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet)
 
 ---
 
-## Información del Estudiante
+## 👤 Información del Estudiante
 
 | Campo | Dato |
 |-------|------|
-| **Nombre completo** | [Tu nombre completo aquí] |
-| **Número de cuenta** | [Tu número de cuenta aquí] |
+| **Nombre completo** | Julio César Gómez Frausto |
+| **Número de cuenta** | 20219473 |
 | **Negocio asignado** | Tienda de Ropa |
-| **Grupo** | E · 4° Semestre · Ingeniería de Software |
+| **Materia** | Programación para Web |
 | **Docente** | Ing. Ricardo Jaramillo Velasco |
-| **Fecha de entrega** | 29 de mayo de 2026 |
 
 ---
 
-## API Consumida
+## 🌐 API Consumida
 
-**API asignada:** API 1 — Comercio  
-**URL base:** `https://api-udec-pweb-aedec9hxbugye0am.westus3-01.azurewebsites.net`
+**API del Profesor — Comercio**
 
-### Endpoints consumidos
-
-| Endpoint | Uso |
-|----------|-----|
-| `GET /api/comercio/productos` | Listado general del catálogo de ropa |
-| `GET /api/comercio/productos/categoria/{id}` | Filtrado de productos por categoría |
-
----
-
-## Tecnologías Utilizadas
-
-- **Blazor Server** (.NET 10)
-- **Entity Framework Core 10** — acceso a BD en Azure SQL
-- **HttpClient con GetFromJsonAsync** — consumo de la API del profesor
-- **Azure SQL Database** — base de datos en la nube
-- **Git + GitHub** — control de versiones
+| Campo | Valor |
+|-------|-------|
+| **URL base** | `https://api-udec-pweb-aedec9hxbugye0am.westus3-01.azurewebsites.net` |
+| **Swagger** | `https://api-udec-pweb-aedec9hxbugye0am.westus3-01.azurewebsites.net/swagger/index.html` |
+| **Endpoint 1** | `GET /api/comercio/productos/categoria/1` — Ropa de Mujer |
+| **Endpoint 2** | `GET /api/comercio/productos/categoria/2` — Ropa de Hombre |
 
 ---
 
-## Base de Datos Propia (Azure SQL)
+## 🗄️ Base de Datos Propia (Azure SQL)
 
-### Tablas
+Tablas creadas con Entity Framework Core y desplegadas en Azure SQL Database:
 
-**Clientes** — Gestión de clientes (CRUD completo)
-- `Id` (PK), `Nombre`, `Teléfono`, `Email`, `FechaRegistro`
-
-**Ventas** — Registro de operaciones del negocio
-- `Id` (PK), `ClienteId` (FK → Clientes), `Fecha`, `Total`, `Estado`
-
-**DetallesVenta** — Tabla puente con la API del profesor
-- `Id` (PK), `VentaId` (FK → Ventas), `ProductoApiId`, `ProductoNombre`, `Cantidad`, `Precio`
+| Tabla | Descripción |
+|-------|-------------|
+| `Clientes` | Registro de clientes de la tienda (CRUD completo) |
+| `Ventas` | Registro de ventas realizadas |
+| `DetallesVenta` | Detalle de cada venta, vincula con productos de la API |
 
 ### Relaciones
-- Clientes → Ventas: **Uno a muchos**
-- Ventas → DetallesVenta: **Uno a muchos**
-- `DetallesVenta.ProductoApiId` referencia el `Id` del producto que viene de la API (no se duplican datos maestros)
+- **Clientes → Ventas:** Uno a muchos
+- **Ventas → DetallesVenta:** Uno a muchos
+- `DetallesVenta.ProductoApiId` referencia el `Id` del producto de la API (sin duplicar datos maestros)
 
 ---
 
-## Configuración de Azure SQL
+## 📄 Pantallas del Sistema
 
-Edita `appsettings.json` con tu cadena de conexión real:
+### 🏠 Pantalla 1 — Inicio / Dashboard
+> Indicadores en tiempo real: clientes y ventas de la BD propia, prendas y categorías de la API.
 
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=tcp:TU_SERVIDOR.database.windows.net,1433;Initial Catalog=TiendaRopaDB;User ID=TU_USUARIO;Password=TU_PASSWORD;Encrypt=True;"
-  }
-}
-```
+![Inicio](screenshots/01_inicio.png)
 
-### Ejecutar migraciones
+---
+
+### 🛍️ Pantalla 2 — Catálogo de Ropa
+> Productos consumidos desde la API del profesor. Filtro por categoría: Ropa de Mujer y Ropa de Hombre.
+
+![Catálogo](screenshots/02_catalogo.png)
+
+---
+
+### 👥 Pantalla 3 — Gestión de Clientes
+> CRUD completo: alta, consulta, edición y eliminación de clientes con validaciones.
+
+![Clientes](screenshots/03_clientes.png)
+
+---
+
+### 🧾 Pantalla 4 — Registro de Ventas
+> Integración: clientes de la BD propia + productos de la API del profesor en una sola operación.
+
+![Ventas](screenshots/04_ventas.png)
+
+---
+
+## 🚀 Cómo Ejecutar el Proyecto
 
 ```bash
-dotnet ef database update
-```
-
----
-
-## Pantallas del Sistema
-
-### Pantalla 1 — Inicio / Dashboard
-- Identidad visual de StyleShop (paleta beige/café)
-- 4 indicadores: clientes registrados y ventas (BD propia) + productos y categorías disponibles (API)
-- Accesos directos a los 3 módulos principales
-
-### Pantalla 2 — Catálogo de Ropa
-- Catálogo consumido desde `GET /api/comercio/productos`
-- Filtro funcional por categoría usando `GET /api/comercio/productos/categoria/{id}`
-- Cada producto muestra: nombre, descripción, precio, stock y disponibilidad
-- Mensaje "Cargando catálogo..." mientras espera la respuesta
-
-### Pantalla 3 — Gestión de Clientes
-- **CRUD completo**: alta, consulta, edición y eliminación
-- Validación de campos obligatorios (nombre, teléfono, email)
-- Confirmación antes de eliminar
-- Protección: no se puede eliminar un cliente con ventas registradas
-
-### Pantalla 4 — Registro de Ventas (Integración)
-- Selección de cliente de la BD propia
-- Selección de productos de la API del profesor
-- Al guardar, el registro se almacena con el `ProductoApiId` (sin duplicar datos maestros)
-- Historial completo de ventas con detalle de productos
-
----
-
-## Capturas de Pantalla
-
-> **[Agregar aquí 4 capturas de pantalla del sistema en funcionamiento]**
-
----
-
-## Cómo Ejecutar el Proyecto
-
-```bash
-# 1. Clona el repositorio
+# 1. Clonar el repositorio
 git clone https://github.com/TU_USUARIO/TiendaRopa.git
 cd TiendaRopa
 
-# 2. Configura la cadena de conexión en appsettings.json
+# 2. Configurar la cadena de conexión en appsettings.json
 
-# 3. Aplica las migraciones
-dotnet ef database update
+# 3. Aplicar migraciones
+Add-Migration InitialCreate
+Update-Database
 
-# 4. Ejecuta la aplicación
+# 4. Ejecutar
 dotnet run
 ```
 
 ---
 
-## Declaratoria de IA
+## 🛠️ Tecnologías Utilizadas
 
-Este proyecto fue desarrollado con apoyo de Claude (Anthropic) como herramienta de asistencia en:
-- Generación de la estructura base de los componentes Blazor
-- Sugerencias de diseño visual con paleta beige
-- Revisión de patrones de consumo de API con `GetFromJsonAsync`
+- **Blazor Server** (.NET 10) — Framework principal
+- **Entity Framework Core 10** — Acceso a base de datos
+- **Azure SQL Database** — Base de datos en la nube
+- **HttpClient + GetFromJsonAsync** — Consumo de API REST
+- **Git + GitHub** — Control de versiones y repositorio
 
-**Enlace de conversación:** [Agregar enlace de la conversación de Claude aquí]
+---
 
-Mi contribución personal incluye: configuración de Azure SQL, ajustes de la lógica de negocio, integración con la API del profesor, y comprensión completa de cada línea de código para la defensa oral.
+## 🤖 Declaratoria de IA
+
+Este proyecto fue desarrollado con apoyo de **Claude (Anthropic)** como herramienta de asistencia en la generación de componentes Blazor, diseño visual con paleta beige y patrones de consumo de API.
+
+**Enlace de conversación:** [Agregar enlace aquí]
+
+Comprendo completamente el funcionamiento de cada módulo y estoy preparado para defenderlo oralmente.
